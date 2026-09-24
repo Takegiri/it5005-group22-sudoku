@@ -78,6 +78,7 @@ if st.session_state.get('puzzle_index') != index:
     st.session_state.puzzle_index = index
     st.session_state.pop('solved_result', None)
     st.session_state.pop('query_result', None)
+    st.session_state.pop('solve_timings', None)
 
 left, right = st.columns([1.1, 1])
 with left:
@@ -96,10 +97,19 @@ with left:
             else:
                 st.session_state.solved_result = {
                     'grid': grid, 'seconds': time.perf_counter() - start, 'algorithm': algorithm}
+                st.session_state.setdefault('solve_timings', {})[algorithm] = (
+                    st.session_state.solved_result['seconds'])
                 st.rerun()
     if saved:
-        st.success(f"{saved['algorithm']}: 81/81 cells solved in {saved['seconds']:.3f} seconds.")
+        st.success(f"{saved['algorithm']}: {len(saved['grid'])}/{n*n} cells solved in {saved['seconds']:.3f} seconds.")
         st.caption('Time includes building a fresh KB and querying all cells. Run the other algorithm to compare.')
+        timings = st.session_state.get('solve_timings', {})
+        st.table([{'Algorithm': name, 'Latest solve (seconds)': round(seconds, 3)}
+                  for name, seconds in timings.items()])
+        if len(timings) == 2:
+            st.caption(f"Same puzzle, latest runs: FC / BC = "
+                       f"{timings['Forward chaining'] / max(timings['Backward chaining'], 1e-9):.2f}. "
+                       'Single-run wall times vary with server load.')
 
 with right:
     st.subheader('Ask about a cell')
@@ -111,6 +121,7 @@ with right:
         tutor = st.checkbox('Tutor mode: explain the proof', value=True)
         submitted = st.form_submit_button('Check entailment')
     if submitted:
+        st.session_state.pop('proof_page', None)
         with st.spinner('Tracing backward from your query…'):
             start = time.perf_counter()
             kb = build_definite_kb(n, box_h, box_w, givens)
@@ -142,7 +153,13 @@ with right:
                 st.write(f"{len(answer['proof'])} steps in the successful proof (premises first).")
                 st.caption('These steps are recorded by the actual inference call; shared premises appear once.')
                 step_ids = {h: i for i, (h, _) in enumerate(answer['proof'], 1)}
-                for i, (head, premises) in enumerate(answer['proof'], 1):
+                page_size = 20
+                pages = (len(answer['proof']) + page_size - 1) // page_size
+                page = st.selectbox('Proof steps', range(pages), key='proof_page',
+                    format_func=lambda p: f'Steps {p*page_size+1}-{min((p+1)*page_size, len(answer["proof"]))}')
+                start_step = page * page_size
+                for i, (head, premises) in enumerate(
+                        answer['proof'][start_step:start_step + page_size], start_step + 1):
                     with st.expander(f'{i}. {sentence(head, premises, box_h, box_w)}'):
                         if premises:
                             st.write('Uses step(s): ' + ', '.join(str(step_ids[p]) for p in premises))

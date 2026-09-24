@@ -27,5 +27,23 @@ Use `main` and entrypoint `sudoku_app.py`. Install the dependencies listed in
 3.13 is suitable. Keep the source repository private if desired and grant the
 deployment service access to this repository through your account settings.
 
+## Internal testing
+
+The GitHub repository and deployed app are private. Keep them private during
+testing; do not submit until reviewer access has been arranged and checked.
+
+Run the independent logic checks and UI regression tests from the repository root:
+
+```sh
+python tests/test_semantics.py
+python tests/test_app.py
+```
+
+The first test checks 768 Boolean Sudoku interpretations and 1,500 Horn queries
+against exhaustive truth tables, including cyclic and duplicate rules. The second
+checks both solvers, true and false queries, proof pagination, retained timings,
+and state reset when changing puzzles. The executed notebook also verifies all
+3,645 candidate queries against both chaining algorithms and the puzzle answers.
+
 The coursework submission itself contains only the notebook and two Python
 implementation files, in a folder named `Assignment and Project Group 22`.
