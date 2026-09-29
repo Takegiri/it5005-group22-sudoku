@@ -24,13 +24,20 @@ without treating a cut branch as a permanent negative result.
 
 Use `main` and entrypoint `sudoku_app.py`. Install the dependencies listed in
 `requirements.txt`; NumPy is required by the original utilities. Python 3.12 or
-3.13 is suitable. Keep the source repository private if desired and grant the
-deployment service access to this repository through your account settings.
+3.13 is suitable. The course deployment guide specifies a public GitHub
+repository and a public app so the grader can open the app without signing in.
 
-## Internal testing
+## Review and validation
 
-The GitHub repository and deployed app are private. Keep them private during
-testing; do not submit until reviewer access has been arranged and checked.
+[Open the deployed app](https://it5005-group22-sudoku-mcvpsg3aywdudne6ouc6hj.streamlit.app/).
+The notebook contains the conceptual answers, measured timings, and executed
+correctness checks. To review the interface, solve the same puzzle with both
+algorithms, then submit a cell query with tutor mode enabled and inspect its
+proof steps. If the app is sleeping, use its wake-up button and allow it to load.
+
+Before submission, open the app URL in an incognito window without signing in
+to GitHub or Streamlit. The puzzle selector should appear without a login prompt;
+check a full-grid solve and a cell query in that window.
 
 Run the independent logic checks and UI regression tests from the repository root:
 
