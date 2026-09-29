@@ -37,6 +37,8 @@ Run the independent logic checks and UI regression tests from the repository roo
 ```sh
 python tests/test_semantics.py
 python tests/test_app.py
+pip install nbclient nbformat ipykernel
+python tests/test_notebook.py
 ```
 
 The first test checks 768 Boolean Sudoku interpretations and 1,500 Horn queries
@@ -44,6 +46,8 @@ against exhaustive truth tables, including cyclic and duplicate rules. The secon
 checks both solvers, true and false queries, proof pagination, retained timings,
 and state reset when changing puzzles. The executed notebook also verifies all
 3,645 candidate queries against both chaining algorithms and the puzzle answers.
+The notebook test starts a fresh Jupyter kernel and executes every code cell in
+order. It does not supply additional imports or reuse an interactive session.
 
 The coursework submission itself contains only the notebook and two Python
 implementation files, in a folder named `Assignment and Project Group 22`.
